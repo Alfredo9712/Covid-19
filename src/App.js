@@ -1,25 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import { Container } from 'react-bootstrap';
+import Charts from './Card';
+import Navbar from './Navbar';
+import Jumbotron from './Jumbotron';
+import Information from './Information';
+import Search from './Search';
+import axios from 'axios';
 import './App.css';
 
 function App() {
+  const [covidData, setData] = useState([]);
+  const [country, setCountry] = useState('');
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios(
+        `https://api.covid19api.com/total/dayone/country/${country}`
+      );
+      setData(result.data);
+      console.log(result.data);
+    };
+
+    fetchData();
+  }, [country]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container fluid>
+      <Navbar />
+      <Jumbotron />
+      <Search
+        getCountry={(q) => {
+          setCountry(q);
+        }}
+      />
+      <Charts active={covidData} />
+      <Information information={covidData} />
+    </Container>
   );
 }
 
